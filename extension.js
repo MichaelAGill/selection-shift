@@ -4,34 +4,44 @@ const vscode = require('vscode');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
 	const moveSelection = async (direction) => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) return;
 
 		const doc = editor.document;
-		const selections = editor.selections;
+		let selections = editor.selections;
 		const texts = selections.map(sel => doc.getText(sel));
+		const isMultiline = texts.some(text => text.includes('\n'));
 
+		// Delete selections
 		await editor.edit(editBuilder => {
 			selections.forEach(sel => editBuilder.delete(sel));
 		});
 
+		// Recalculate positions after deletion
+		const allText = doc.getText();
 		const newPositions = selections.map((sel, i) => {
-			const offset = direction === 'right'
-				? Math.min(doc.getText().length, doc.offsetAt(sel.end) + 1 - texts[i].length)
-				: Math.max(0, doc.offsetAt(sel.start) - 1);
-			return doc.positionAt(offset);
+			const startOffset = doc.offsetAt(sel.start);
+			const moveBy = direction === 'right' ? 1 : -1;
+			let newOffset = startOffset + moveBy;
+		
+			// Clamp offset
+			newOffset = Math.max(0, Math.min(doc.getText().length, newOffset));
+		
+			return doc.positionAt(newOffset);
 		});
+		
 
-		const newSelections = [];
+		// If moving left, reverse insert order to prevent offset drift
+		const insertOrder = direction === 'right' ? [...texts.keys()] : [...texts.keys()].reverse();
+
+		const newSelections = Array(texts.length);
 
 		await editor.edit(editBuilder => {
-			texts.forEach((text, i) => {
-				editBuilder.insert(newPositions[i], text);
-				const start = newPositions[i];
-				const end = start.translate(0, text.length);
-				newSelections.push(new vscode.Selection(start, end));
+			insertOrder.forEach(i => {
+				const pos = newPositions[i];
+				editBuilder.insert(pos, texts[i]);
+				newSelections[i] = new vscode.Selection(pos, pos.translate(0, texts[i].length));
 			});
 		});
 
@@ -44,8 +54,7 @@ function activate(context) {
 	context.subscriptions.push(moveRight, moveLeft);
 }
 
-// This method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
 	activate,

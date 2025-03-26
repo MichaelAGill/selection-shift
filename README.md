@@ -5,6 +5,13 @@
 * Works seamlessly with single-line and single-selection scenarios.
 * Simple and intuitive keyboard shortcuts for quick text manipulation.
 
+## Controls
+* **Shift + Alt + Left Arrow**: Move the selected text left by one character.
+* **Shift + Alt + Right Arrow**: Move the selected text right by one character.
+
+## About
+This is a Visual Studio Code (VSCode) extension designed to make text manipulation easier and more efficient.
+
 ## Requirements
 No additional requirements or dependencies.
 
