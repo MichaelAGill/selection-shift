@@ -1,5 +1,7 @@
 # selection-shift README
 
+![Demo](images/SelectionShiftExample.gif)
+
 ## Features
 * Shift selected text left or right by characters.
 * Works seamlessly with single-line and single-selection scenarios.
