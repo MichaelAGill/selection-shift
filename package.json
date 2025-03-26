@@ -3,7 +3,7 @@
   "displayName": "Selection Shift",
   "publisher": "MichaelGill",
   "description": "Allows you to shift your text selection left and right",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/MichaelAGill/selection-shift"
